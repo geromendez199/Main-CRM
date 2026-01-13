@@ -85,6 +85,9 @@ model User {
   name        String?
   roleId      String
   teamId      String?   @map("team_id")
+  failedLoginAttempts Int @default(0) @map("failed_login_attempts")
+  lockedUntil DateTime? @map("locked_until")
+  lastFailedLoginAt DateTime? @map("last_failed_login_at")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
@@ -97,6 +100,7 @@ model User {
   tasks    Task[]    @relation("TaskAssignee")
   refreshTokens RefreshToken[]
 
+  @@index([tenantId, deletedAt])
   @@map("users")
 }
 
@@ -111,6 +115,7 @@ model Team {
   tenant Tenant @relation(fields: [tenantId], references: [id])
   users  User[]
 
+  @@index([tenantId, deletedAt])
   @@map("teams")
 }
 
@@ -127,6 +132,7 @@ model Role {
   users        User[]
 
   @@unique([tenantId, name])
+  @@index([tenantId, deletedAt])
   @@map("roles")
 }
 
@@ -143,6 +149,7 @@ model Permission {
   roles        RolePermission[]
 
   @@unique([tenantId, action, resource])
+  @@index([tenantId, deletedAt])
   @@map("permissions")
 }
 
@@ -179,6 +186,8 @@ model Account {
   attachments Attachment[]
   entityTags EntityTag[]
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, ownerId])
   @@map("accounts")
 }
 
@@ -202,6 +211,8 @@ model Contact {
   attachments Attachment[]
   entityTags EntityTag[]
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
   @@map("contacts")
 }
 
@@ -217,6 +228,8 @@ model Pipeline {
   stages Stage[]
   deals  Deal[]
 
+  @@unique([tenantId, name])
+  @@index([tenantId, deletedAt])
   @@map("pipelines")
 }
 
@@ -236,6 +249,9 @@ model Stage {
   deals    Deal[]
 
   @@unique([pipelineId, key])
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, pipelineId])
+  @@index([tenantId, key])
   @@map("stages")
 }
 
@@ -263,6 +279,11 @@ model Deal {
   attachments Attachment[]
   entityTags EntityTag[]
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
+  @@index([tenantId, ownerId])
+  @@index([tenantId, pipelineId])
+  @@index([tenantId, stageId])
   @@map("deals")
 }
 
@@ -284,6 +305,10 @@ model Activity {
   contact Contact? @relation(fields: [contactId], references: [id])
   deal    Deal?    @relation(fields: [dealId], references: [id])
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
+  @@index([tenantId, contactId])
+  @@index([tenantId, dealId])
   @@map("activities")
 }
 
@@ -308,6 +333,11 @@ model Task {
   contact Contact? @relation(fields: [contactId], references: [id])
   deal    Deal?    @relation(fields: [dealId], references: [id])
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
+  @@index([tenantId, contactId])
+  @@index([tenantId, dealId])
+  @@index([tenantId, assignedUserId])
   @@map("tasks")
 }
 
@@ -327,6 +357,10 @@ model Note {
   contact Contact? @relation(fields: [contactId], references: [id])
   deal    Deal?    @relation(fields: [dealId], references: [id])
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
+  @@index([tenantId, contactId])
+  @@index([tenantId, dealId])
   @@map("notes")
 }
 
@@ -349,6 +383,10 @@ model Attachment {
   contact Contact? @relation(fields: [contactId], references: [id])
   deal    Deal?    @relation(fields: [dealId], references: [id])
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, accountId])
+  @@index([tenantId, contactId])
+  @@index([tenantId, dealId])
   @@map("attachments")
 }
 
@@ -364,6 +402,7 @@ model Tag {
   entityTags EntityTag[]
 
   @@unique([tenantId, name])
+  @@index([tenantId, deletedAt])
   @@map("tags")
 }
 
@@ -381,6 +420,10 @@ model EntityTag {
   contact Contact? @relation(fields: [contactId], references: [id])
   deal    Deal?    @relation(fields: [dealId], references: [id])
 
+  @@index([tenantId, tagId])
+  @@index([tenantId, accountId])
+  @@index([tenantId, contactId])
+  @@index([tenantId, dealId])
   @@map("entity_tags")
 }
 
@@ -400,6 +443,8 @@ model AuditLog {
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
+  @@index([tenantId, createdAt])
+  @@index([tenantId, entityType, entityId])
   @@map("audit_logs")
 }
 
@@ -416,6 +461,8 @@ model AutomationRule {
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, trigger])
   @@map("automation_rules")
 }
 
@@ -430,5 +477,8 @@ model RefreshToken {
 
   user User @relation(fields: [userId], references: [id])
 
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
   @@map("refresh_tokens")
 }

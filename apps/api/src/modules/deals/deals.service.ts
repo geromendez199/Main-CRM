@@ -16,7 +16,9 @@ export class DealsService extends SecureService {
     await this.access.assertPermissions(user, [{ action: PermissionAction.UPDATE, resource: 'deal' }]);
     const updated = await this.update(user.tenantId, id, data);
     if (data.stageId) {
-      const stage = await this.prisma.stage.findFirst({ where: { id: data.stageId as string } });
+      const stage = await this.prisma.stage.findFirst({
+        where: { id: data.stageId as string, tenantId: user.tenantId, deletedAt: null }
+      });
       if (stage?.key === 'WON') {
         await this.automation.enqueueDealWon(user.tenantId, updated.id);
       }

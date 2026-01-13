@@ -10,6 +10,6 @@ export class TenantService {
 
   async getCurrent(user: AuthUser) {
     await this.access.assertPermissions(user, [{ action: PermissionAction.READ, resource: 'tenant' }]);
-    return this.prisma.tenant.findUnique({ where: { id: user.tenantId } });
+    return this.prisma.tenant.findFirst({ where: { id: user.tenantId, deletedAt: null } });
   }
 }

@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import { loginSchema, refreshSchema } from '@maincrm/shared';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('api/v1/auth')
 @UseGuards(ThrottlerGuard)
@@ -11,12 +11,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ limit: 5, ttl: 60 })
   async login(@Body(new ZodValidationPipe(loginSchema)) body: { email: string; password: string }, @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(body.email, body.password);
     const tokens = await this.authService.login(user);
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/api/v1/auth/refresh'
     });
@@ -27,6 +28,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @Throttle({ limit: 10, ttl: 60 })
   async refresh(@Body(new ZodValidationPipe(refreshSchema)) body: { refreshToken?: string }, @Res({ passthrough: true }) res: Response) {
     const token = body.refreshToken ?? res.req.cookies?.refresh_token;
     if (!token) {
@@ -35,7 +37,7 @@ export class AuthController {
     const tokens = await this.authService.refresh(token);
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/api/v1/auth/refresh'
     });

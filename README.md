@@ -1,390 +1,128 @@
 # Main CRM
 
-**Main CRM** es un CRM full-stack de nivel profesional, diseñado para 2026 y más allá.  
-Arquitectura moderna, altamente modular, segura, escalable y preparada para integraciones, automatización avanzada y multitenancy.
+Main CRM is a production-ready, multi-tenant CRM foundation built with a modern, API-first stack. It includes a NestJS REST API, a Next.js web application, and a BullMQ worker for automations.
 
-Este proyecto apunta a ser **producto real**, no demo ni prototipo académico.
+## Highlights
 
----
+- **API-first** design with OpenAPI 3.1 docs.
+- **Multi-tenant** schema with strict tenant scoping.
+- **RBAC** with role + permission enforcement at controller and service layers.
+- **Audit logging** on all create/update/delete/restore operations.
+- **Automation** pipeline with BullMQ and a deal-won onboarding workflow.
+- **Dockerized** infrastructure (Postgres, Redis, MinIO, Nginx).
 
-## Índice
+## Repository Structure
 
-- [Visión](#visión)
-- [Principios de Diseño](#principios-de-diseño)
-- [Funcionalidades](#funcionalidades)
-- [Arquitectura General](#arquitectura-general)
-- [Stack Tecnológico 2026](#stack-tecnológico-2026)
-- [Estructura del Repositorio](#estructura-del-repositorio)
-- [Modelo de Dominio](#modelo-de-dominio)
-- [Roles y Permisos (RBAC)](#roles-y-permisos-rbac)
-- [API](#api)
-- [Autenticación y Seguridad](#autenticación-y-seguridad)
-- [Auditoría y Trazabilidad](#auditoría-y-trazabilidad)
-- [Automatizaciones](#automatizaciones)
-- [Reportes y Analytics](#reportes-y-analytics)
-- [Variables de Entorno](#variables-de-entorno)
-- [Instalación](#instalación)
-- [Ejecución en Desarrollo](#ejecución-en-desarrollo)
-- [Migraciones y Seed](#migraciones-y-seed)
-- [Observabilidad](#observabilidad)
-- [Despliegue](#despliegue)
-- [Roadmap](#roadmap)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
+```
+apps/
+  api/        # NestJS REST API
+  web/        # Next.js App Router UI
+  worker/     # BullMQ workers
+packages/
+  shared/     # Shared types, Zod schemas, enums
+infra/
+  nginx/      # Reverse proxy configuration
+```
 
----
+## Requirements
 
-## Visión
+- Node.js >= 20
+- pnpm >= 9
+- Docker + Docker Compose
 
-Centralizar y optimizar la gestión de clientes, operaciones y oportunidades en un único sistema:
+## Environment Variables
 
-- Información consistente y auditable
-- Automatización de procesos
-- Escalabilidad horizontal
-- Integración sencilla con sistemas externos
-- Experiencia de usuario clara y profesional
+Copy `.env.example` to `.env` and adjust values as needed.
 
----
+## Development
 
-## Principios de Diseño
+```bash
+pnpm install
+pnpm -r prisma:generate
+pnpm -r dev
+```
 
-- **Domain-Driven Design (DDD)**
-- **API-first**
-- **Security by default**
-- **Observabilidad desde el día uno**
-- **Configuración > hardcode**
-- **Escalable y desacoplado**
-- **Preparado para multitenancy**
+## Docker Compose
 
----
+```bash
+docker compose up -d --build
+```
 
-## Funcionalidades
-
-### Núcleo CRM
-- **Accounts**: empresas/organizaciones
-- **Contacts**: personas asociadas a cuentas
-- **Deals**: oportunidades con pipeline configurable
-- **Pipelines & Stages**: embudos personalizables
-- **Activities**: llamadas, reuniones, visitas, emails
-- **Tasks**: tareas con prioridades y vencimientos
-- **Notes**: notas internas
-- **Attachments**: archivos asociados a cualquier entidad
-- **Tags**: etiquetado transversal
-
-### Operación
-- Asignación por usuario o equipo
-- Historial completo de cambios
-- Búsqueda avanzada y filtros
-- Exportación de datos
-
-### Automatización
-- Reglas por eventos
-- Acciones automáticas
-- Webhooks
-- Jobs en background
-
----
-
-## Arquitectura General
-
-Arquitectura **modular, desacoplada y orientada a servicios**:
-
-- Frontend SPA
-- Backend API
-- Workers asíncronos
-- Base de datos relacional
-- Cache + cola de mensajes
-- Storage de archivos
-
-Todo orquestado con Docker.
-
----
-
-## Stack Tecnológico 2026
-
-### Backend
-- **Node.js 20+**
-- **NestJS**
-- **TypeScript**
-- **PostgreSQL**
-- **Prisma ORM**
-- **Redis**
-- **BullMQ**
-- **OpenAPI 3.1**
-
-### Frontend
-- **Next.js (App Router)**
-- **React 19**
-- **TypeScript**
-- **TanStack Query**
-- **Server Components**
-- **Tailwind CSS**
-
-### Infraestructura
-- **Docker / Docker Compose**
-- **Nginx**
-- **MinIO (S3 compatible)**
-- **Prometheus + Grafana**
-- **OpenTelemetry**
-
----
-
-## Estructura del Repositorio
-
-main-crm/
-│
-├── apps/
-│   ├── api/                 # Backend NestJS
-│   ├── web/                 # Frontend Next.js
-│   └── worker/              # Jobs y automatizaciones
-│
-├── packages/
-│   ├── shared/              # Tipos, enums, validaciones
-│   ├── ui/                  # Componentes UI
-│   └── config/              # Configuración común
-│
-├── infra/
-│   ├── docker/
-│   └── nginx/
-│
-├── docs/
-└── README.md
-
----
-
-## Modelo de Dominio
-
-Entidades principales:
-
-- users
-- teams
-- roles
-- permissions
-- accounts
-- contacts
-- deals
-- pipelines
-- stages
-- activities
-- tasks
-- notes
-- attachments
-- tags
-- audit_logs
-- automation_rules
-
-Todas las entidades:
-- tienen timestamps
-- soportan soft delete
-- generan auditoría
-
----
-
-## Roles y Permisos (RBAC)
-
-Roles base:
-- **Admin**
-- **Manager**
-- **User**
-- **ReadOnly**
-
-Permisos:
-- read
-- create
-- update
-- delete
-- assign
-- export
-
-Control por:
-- rol
-- equipo
-- ownership
-
----
-
-## API
-
-Base URL:
-
-/api/v1
-
-Ejemplos:
-
-GET    /accounts
-POST   /accounts
-GET    /deals
-PATCH  /deals/:id
-GET    /reports/funnel
-POST   /automations
-
-Convenciones:
-- JSON estándar
-- paginación
-- filtros
-- versionado
-
----
-
-## Autenticación y Seguridad
-
-- JWT Access + Refresh
-- Rotación de tokens
-- Hash Argon2
-- Rate limiting
-- Protección CSRF
-- Validación estricta de inputs
-- Headers de seguridad
-
----
-
-## Auditoría y Trazabilidad
-
-Toda acción crítica se registra:
-- usuario
-- entidad
-- acción
-- valores previos y nuevos
-- timestamp
-- IP / user agent
-
----
-
-## Automatizaciones
-
-- Triggers por eventos
-- Acciones encadenadas
-- Jobs asíncronos
-- Reintentos
-- Logs de ejecución
-
-Ejemplo:
-> Al mover un deal a “Ganado” → crear tareas + notificar + webhook
-
----
-
-## Reportes y Analytics
-
-- Funnel de ventas
-- Forecast
-- Conversión por etapa
-- Actividad por usuario
-- Aging de oportunidades
-- Export CSV / XLSX
-
----
-
-## Variables de Entorno
-
-### Backend (`apps/api/.env`)
-
-NODE_ENV=development
-PORT=4000
-
-DATABASE_URL=postgresql://postgres:postgres@db:5432/maincrm
-REDIS_URL=redis://redis:6379
-
-JWT_ACCESS_SECRET=change_me
-JWT_REFRESH_SECRET=change_me
-
-S3_ENDPOINT=http://minio:9000
-S3_ACCESS_KEY=minio
-S3_SECRET_KEY=minio123
-S3_BUCKET=main-crm
-
-CORS_ORIGIN=http://localhost:3000
-
-### Frontend (`apps/web/.env`)
-
-NEXT_PUBLIC_API_URL=http://localhost:4000
-
----
-
-## Instalación
-
-Requisitos:
-- Docker
-- Docker Compose
-
-Clonar:
-
-git clone https://github.com/tu-org/main-crm.git
-cd main-crm
-
----
-
-## Ejecución en Desarrollo
-
-docker compose up -d –build
-
-Servicios:
+Services:
 - Web: http://localhost:3000
 - API: http://localhost:4000
+- Docs: http://localhost:4000/docs
+- Nginx: http://localhost:8080
 
----
+## Database
 
-## Migraciones y Seed
+```bash
+pnpm --filter @maincrm/api prisma:migrate
+pnpm --filter @maincrm/api prisma:seed
+```
 
-npx prisma migrate deploy
-npx prisma db seed
+## Smoke Test (curl)
 
-Incluye:
-- Admin inicial
-- Pipeline default
-- Roles base
+1) Login with seeded admin:
+```bash
+curl -X POST http://localhost:4000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@maincrm.local","password":"ChangeMe123!"}'
+```
 
----
+2) Create an account:
+```bash
+curl -X POST http://localhost:4000/api/v1/accounts \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Acme Corp"}'
+```
 
-## Observabilidad
+3) Create a deal (fetch pipeline + stage IDs first):
+```bash
+curl -X GET http://localhost:4000/api/v1/pipelines \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 
-- Logs estructurados
-- Métricas
-- Tracing distribuido
-- Health checks
+curl -X GET http://localhost:4000/api/v1/stages \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 
----
+curl -X POST http://localhost:4000/api/v1/deals \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Enterprise Expansion","accountId":"<ACCOUNT_ID>","pipelineId":"<PIPELINE_ID>","stageId":"<STAGE_ID>"}'
+```
 
-## Despliegue
+4) Move deal to WON:
+```bash
+curl -X PUT http://localhost:4000/api/v1/deals/<DEAL_ID> \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"stageId":"<WON_STAGE_ID>"}'
+```
 
-Opciones:
-- VPS con Docker
-- Kubernetes
-- Cloud managed services
+5) Verify automation tasks created:
+```bash
+curl -X GET http://localhost:4000/api/v1/tasks \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
 
-Checklist:
-- Backups automáticos
-- Secrets seguros
-- Monitoreo activo
+6) Check audit logs:
+```bash
+curl -X GET http://localhost:4000/api/v1/audit-logs \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
 
----
+## API Documentation
 
-## Roadmap
+- Swagger UI: `http://localhost:4000/docs`
+- OpenAPI JSON: `http://localhost:4000/docs-json`
 
-### v0.1
-- Core CRM
-- Auth + RBAC
-- Auditoría
+## Limitations
 
-### v0.2
-- Automatizaciones
-- Adjuntos
-- Reportes
+- The web UI currently uses static mock data instead of live API integration for MVP screens.
+- File uploads to MinIO are stored as metadata only; direct upload endpoints are not implemented yet.
+- RBAC scoping beyond tenant-level (team/ownership) is not yet enforced in services.
 
-### v1.0
-- Multitenancy
-- Integraciones externas
-- Dashboards avanzados
-
----
-
-## Contribuciones
-
-- Branch: `feat/*` o `fix/*`
-- PR documentados
-- Código tipado y testeado
-
----
-
-## Licencia
+## License
 
 MIT

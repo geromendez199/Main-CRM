@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      POSTGRES_DB: maincrm_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      REDIS_PORT: 6379
+      MINIO_PORT: 9000
+      MINIO_CONSOLE_PORT: 9001
+      API_PORT: 4000
+      WEB_PORT: 3000
+      NGINX_PORT: 8080
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/maincrm_test
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: test_access_secret
+      JWT_REFRESH_SECRET: test_refresh_secret
+      JWT_ACCESS_EXPIRES_IN: 900s
+      JWT_REFRESH_EXPIRES_IN: 30d
+      CORS_ORIGIN: http://localhost:3000
+      S3_ENDPOINT: http://localhost:9000
+      S3_REGION: us-east-1
+      S3_ACCESS_KEY: minio
+      S3_SECRET_KEY: minio123
+      S3_BUCKET: main-crm
+      SEED_ADMIN_EMAIL: admin@maincrm.local
+      SEED_ADMIN_PASSWORD: ChangeMe123!
+      SEED_TENANT_NAME: Default Tenant
+      SEED_TENANT_SLUG: default
+      API_BASE_URL: http://localhost:4000
+      WEB_BASE_URL: http://localhost:3000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma client
+        run: pnpm --filter @maincrm/api prisma:generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Start dependencies
+        run: |
+          cat <<'ENV' > .env
+          POSTGRES_DB=${POSTGRES_DB}
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          POSTGRES_PORT=${POSTGRES_PORT}
+          REDIS_PORT=${REDIS_PORT}
+          MINIO_PORT=${MINIO_PORT}
+          MINIO_CONSOLE_PORT=${MINIO_CONSOLE_PORT}
+          API_PORT=${API_PORT}
+          WEB_PORT=${WEB_PORT}
+          NGINX_PORT=${NGINX_PORT}
+          DATABASE_URL=postgresql://postgres:postgres@postgres:5432/maincrm_test
+          REDIS_URL=redis://redis:6379
+          JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+          JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+          JWT_ACCESS_EXPIRES_IN=${JWT_ACCESS_EXPIRES_IN}
+          JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+          S3_ENDPOINT=http://minio:9000
+          S3_REGION=${S3_REGION}
+          S3_ACCESS_KEY=${S3_ACCESS_KEY}
+          S3_SECRET_KEY=${S3_SECRET_KEY}
+          S3_BUCKET=${S3_BUCKET}
+          CORS_ORIGIN=${CORS_ORIGIN}
+          SEED_ADMIN_EMAIL=${SEED_ADMIN_EMAIL}
+          SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
+          SEED_TENANT_NAME=${SEED_TENANT_NAME}
+          SEED_TENANT_SLUG=${SEED_TENANT_SLUG}
+          ENV
+          docker compose up -d postgres redis minio
+
+      - name: Wait for Postgres
+        run: |
+          until docker compose exec -T postgres pg_isready -U ${POSTGRES_USER}; do
+            sleep 2
+          done
+
+      - name: Migrate database
+        run: pnpm --filter @maincrm/api prisma:migrate
+
+      - name: Integration tests
+        run: pnpm --filter @maincrm/api test:integration
+
+      - name: Build
+        run: pnpm build
+
+      - name: Seed database
+        run: pnpm --filter @maincrm/api prisma:seed
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter @maincrm/web exec playwright install --with-deps
+
+      - name: Start services
+        run: |
+          pnpm --filter @maincrm/api start &
+          API_PID=$!
+          pnpm --filter @maincrm/worker start &
+          WORKER_PID=$!
+          PORT=${WEB_PORT} pnpm --filter @maincrm/web start &
+          WEB_PID=$!
+
+          for i in {1..30}; do
+            if curl -sSf ${API_BASE_URL}/health > /dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+          node scripts/smoke-test.mjs
+          pnpm --filter @maincrm/web test:e2e
+
+          kill ${API_PID} ${WORKER_PID} ${WEB_PID}
+
+      - name: Shutdown dependencies
+        if: always()
+        run: docker compose down

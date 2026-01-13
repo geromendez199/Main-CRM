@@ -9,8 +9,13 @@ export class AccessControlService {
 
   async assertPermissions(user: AuthUser, requirements: PermissionRequirement[]): Promise<void> {
     const role = await this.prisma.role.findFirst({
-      where: { tenantId: user.tenantId, name: user.role },
-      include: { permissions: { include: { permission: true } } }
+      where: { tenantId: user.tenantId, name: user.role, deletedAt: null },
+      include: {
+        permissions: {
+          where: { permission: { deletedAt: null } },
+          include: { permission: true }
+        }
+      }
     });
 
     const permissions = new Set(

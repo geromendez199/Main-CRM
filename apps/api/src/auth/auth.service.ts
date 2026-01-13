@@ -14,12 +14,34 @@ export class AuthService {
       where: { email },
       include: { role: true }
     });
-    if (!user || user.deletedAt) {
+    if (!user || user.deletedAt || user.role.deletedAt) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    const now = new Date();
+    if (user.lockedUntil && user.lockedUntil > now) {
+      throw new UnauthorizedException('Account locked');
+    }
+    const shouldResetFailures =
+      user.lastFailedLoginAt && now.getTime() - user.lastFailedLoginAt.getTime() > 15 * 60 * 1000;
     const isValid = await argon2.verify(user.password, password);
     if (!isValid) {
+      const nextFailures = (shouldResetFailures ? 0 : user.failedLoginAttempts) + 1;
+      const shouldLock = nextFailures >= 5;
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: nextFailures,
+          lastFailedLoginAt: now,
+          lockedUntil: shouldLock ? new Date(now.getTime() + 15 * 60 * 1000) : null
+        }
+      });
       throw new UnauthorizedException('Invalid credentials');
+    }
+    if (user.failedLoginAttempts > 0 || user.lockedUntil || user.lastFailedLoginAt) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { failedLoginAttempts: 0, lockedUntil: null, lastFailedLoginAt: null }
+      });
     }
     return {
       id: user.id,

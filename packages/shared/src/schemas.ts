@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ActivityType, DealStageKey, TaskPriority, TaskStatus } from './enums.js';
+import { PASSWORD_POLICY_MESSAGE, PASSWORD_POLICY_REGEX } from './constants.js';
 
 export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -95,7 +96,7 @@ export const teamUpdateSchema = teamCreateSchema.partial();
 
 export const userCreateSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().regex(PASSWORD_POLICY_REGEX, PASSWORD_POLICY_MESSAGE),
   name: z.string().min(1).optional(),
   roleId: z.string().uuid(),
   teamId: z.string().uuid().optional()
@@ -129,7 +130,7 @@ export const stageUpdateSchema = stageCreateSchema.partial();
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8)
+  password: z.string().min(12)
 });
 
 export const refreshSchema = z.object({

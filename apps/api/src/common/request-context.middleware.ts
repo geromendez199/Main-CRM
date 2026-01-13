@@ -10,7 +10,10 @@ export class RequestContextMiddleware implements NestMiddleware {
     const requestId = req.header(REQUEST_ID_HEADER) ?? uuidv4();
     res.setHeader(REQUEST_ID_HEADER, requestId);
     const tenantId = (req as Request & { user?: { tenantId?: string } }).user?.tenantId ?? null;
-    const userId = (req as Request & { user?: { sub?: string; id?: string } }).user?.id ?? null;
+    const userId =
+      (req as Request & { user?: { sub?: string; id?: string } }).user?.id ??
+      (req as Request & { user?: { sub?: string; id?: string } }).user?.sub ??
+      null;
     requestContext.run(
       {
         requestId,

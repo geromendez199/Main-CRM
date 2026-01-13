@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { requestContext } from './request-context.js';
 import { AuditAction } from '@maincrm/shared';
 import type { PrismaService } from './prisma.service.js';
@@ -32,19 +33,33 @@ export class BaseService {
   }
 
   async update(tenantId: string, id: string, data: Record<string, unknown>) {
-    return this.delegate().update({ where: { id }, data: { ...data, tenantId } });
+    const existing = await this.delegate().findFirst({ where: { id, tenantId, deletedAt: null } });
+    if (!existing) {
+      throw new NotFoundException('Resource not found');
+    }
+    return this.delegate().update({ where: { id }, data });
   }
 
   async softDelete(tenantId: string, id: string) {
     requestContext.setAuditAction(AuditAction.DELETE);
-    const result = await this.delegate().update({ where: { id }, data: { deletedAt: new Date(), tenantId } });
+    const existing = await this.delegate().findFirst({ where: { id, tenantId, deletedAt: null } });
+    if (!existing) {
+      requestContext.setAuditAction(undefined);
+      throw new NotFoundException('Resource not found');
+    }
+    const result = await this.delegate().update({ where: { id }, data: { deletedAt: new Date() } });
     requestContext.setAuditAction(undefined);
     return result;
   }
 
   async restore(tenantId: string, id: string) {
     requestContext.setAuditAction(AuditAction.RESTORE);
-    const result = await this.delegate().update({ where: { id }, data: { deletedAt: null, tenantId } });
+    const existing = await this.delegate().findFirst({ where: { id, tenantId } });
+    if (!existing) {
+      requestContext.setAuditAction(undefined);
+      throw new NotFoundException('Resource not found');
+    }
+    const result = await this.delegate().update({ where: { id }, data: { deletedAt: null } });
     requestContext.setAuditAction(undefined);
     return result;
   }

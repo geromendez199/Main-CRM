@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import argon2 from 'argon2';
 import { PrismaService } from '../../common/prisma.service.js';
 import { AccessControlService } from '../roles/access-control.service.js';
 import type { AuthUser } from '../../auth/auth.types.js';
-import { PermissionAction } from '@maincrm/shared';
+import { PASSWORD_POLICY_MESSAGE, PASSWORD_POLICY_REGEX, PermissionAction } from '@maincrm/shared';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +32,7 @@ export class UsersService {
 
   async create(user: AuthUser, data: { email: string; password: string; name?: string; roleId: string; teamId?: string }) {
     await this.access.assertPermissions(user, [{ action: PermissionAction.CREATE, resource: 'user' }]);
+    this.assertPasswordPolicy(data.password);
     const password = await argon2.hash(data.password);
     return this.prisma.user.create({
       data: {
@@ -47,10 +48,21 @@ export class UsersService {
 
   async update(user: AuthUser, id: string, data: { email?: string; password?: string; name?: string; roleId?: string; teamId?: string }) {
     await this.access.assertPermissions(user, [{ action: PermissionAction.UPDATE, resource: 'user' }]);
+    const existing = await this.prisma.user.findFirst({ where: { id, tenantId: user.tenantId, deletedAt: null } });
+    if (!existing) {
+      throw new NotFoundException('User not found');
+    }
     const updateData: Record<string, unknown> = { ...data };
     if (data.password) {
+      this.assertPasswordPolicy(data.password);
       updateData.password = await argon2.hash(data.password);
     }
     return this.prisma.user.update({ where: { id }, data: updateData });
+  }
+
+  private assertPasswordPolicy(password: string): void {
+    if (!PASSWORD_POLICY_REGEX.test(password)) {
+      throw new BadRequestException(PASSWORD_POLICY_MESSAGE);
+    }
   }
 }

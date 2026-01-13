@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
+import { randomUUID } from 'node:crypto';
+import { REQUEST_ID_HEADER } from '@maincrm/shared';
 import { AuthModule } from './auth/auth.module.js';
 import { AccountsModule } from './modules/accounts/accounts.module.js';
 import { ContactsModule } from './modules/contacts/contacts.module.js';
@@ -24,6 +27,22 @@ import { HealthModule } from './modules/health/health.module.js';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.LOG_LEVEL ?? 'info',
+        genReqId: (req) => (req.headers[REQUEST_ID_HEADER] as string | undefined) ?? randomUUID(),
+        customProps: (req) => ({
+          requestId: (req.headers[REQUEST_ID_HEADER] as string | undefined) ?? null
+        }),
+        transport:
+          process.env.NODE_ENV !== 'production'
+            ? {
+                target: 'pino-pretty',
+                options: { colorize: true, translateTime: 'SYS:standard' }
+              }
+            : undefined
+      }
+    }),
     ThrottlerModule.forRoot({ ttl: 60, limit: 20 }),
     AuthModule,
     AccountsModule,

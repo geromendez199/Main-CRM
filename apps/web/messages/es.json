@@ -1,0 +1,213 @@
+{
+  "app": {
+    "name": "Main CRM",
+    "nav": {
+      "dashboard": "Panel",
+      "accounts": "Cuentas",
+      "deals": "Oportunidades",
+      "tasks": "Tareas",
+      "settings": "Configuración",
+      "profile": "Mi perfil",
+      "logout": "Cerrar sesión",
+      "search": "Buscar cuentas, oportunidades, contactos..."
+    },
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "update": "Actualizar",
+      "close": "Cerrar",
+      "edit": "Editar",
+      "view": "Ver",
+      "new": "Nuevo",
+      "apply": "Aplicar",
+      "clear": "Limpiar",
+      "back": "Volver",
+      "next": "Siguiente"
+    },
+    "userFallback": "Usuario"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "logout": "Cerrar sesión",
+    "email": "Correo",
+    "password": "Contraseña",
+    "name": "Nombre completo",
+    "confirmPassword": "Confirmar contraseña",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "welcome": "Bienvenido de nuevo",
+    "subtitle": "Accede a tu espacio de trabajo.",
+    "cta": "¿Necesitas una cuenta?",
+    "signupSubtitle": "Crea un usuario en tu organización.",
+    "loginSuccess": "Sesión iniciada correctamente.",
+    "loginError": "No se pudo iniciar sesión.",
+    "signupSuccess": "Usuario creado correctamente.",
+    "signupError": "No se pudo crear el usuario.",
+    "logoutSuccess": "Sesión cerrada.",
+    "adminNoticeTitle": "Admin requerido",
+    "adminNoticeBody": "El registro requiere un administrador autenticado.",
+    "roleLabel": "Rol",
+    "rolePlaceholder": "Seleccionar rol",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "placeholders": {
+      "email": "tu@empresa.com",
+      "password": "••••••••",
+      "name": "Alex Morgan",
+      "confirmPassword": "••••••••",
+      "signupEmail": "alex@empresa.com"
+    },
+    "validation": {
+      "email": "Ingresa un correo válido.",
+      "password": "La contraseña debe tener al menos 12 caracteres.",
+      "name": "El nombre debe tener al menos 2 caracteres.",
+      "role": "Selecciona un rol."
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "kpis": {
+      "accounts": "Cuentas",
+      "openDeals": "Oportunidades abiertas",
+      "wonDeals": "Ganadas",
+      "tasksDue": "Tareas vencidas"
+    },
+    "activityTitle": "Actividad reciente",
+    "activityEmpty": "Aún no hay actividad reciente."
+  },
+  "accounts": {
+    "title": "Cuentas",
+    "subtitle": "Gestiona organizaciones y relación comercial.",
+    "emptyTitle": "Aún no hay cuentas",
+    "emptyBody": "Crea tu primera cuenta para empezar.",
+    "newAccount": "Nueva cuenta",
+    "filters": {
+      "owner": "Responsable",
+      "allOwners": "Todos los responsables",
+      "page": "Página {page} de {total}"
+    },
+    "placeholders": {
+      "name": "Acme Corp",
+      "industry": "Software",
+      "website": "https://empresa.com"
+    },
+    "validation": {
+      "name": "El nombre debe tener al menos 2 caracteres.",
+      "website": "Ingresa un sitio web válido."
+    },
+    "fields": {
+      "name": "Nombre de cuenta",
+      "industry": "Industria",
+      "website": "Sitio web"
+    },
+    "detail": {
+      "overview": "Resumen",
+      "contacts": "Contactos",
+      "deals": "Oportunidades",
+      "activities": "Actividades",
+      "tasks": "Tareas",
+      "notes": "Notas",
+      "attachments": "Archivos"
+    }
+  },
+  "deals": {
+    "title": "Oportunidades",
+    "subtitle": "Gestiona el pipeline y cierra ingresos más rápido.",
+    "newDeal": "Nueva oportunidad",
+    "dealName": "Nombre de la oportunidad",
+    "pipeline": "Pipeline",
+    "stage": "Etapa",
+    "value": "Valor",
+    "account": "Cuenta",
+    "placeholders": {
+      "name": "Expansión empresarial",
+      "value": "50000"
+    },
+    "validation": {
+      "name": "El nombre debe tener al menos 2 caracteres.",
+      "required": "Este campo es obligatorio."
+    },
+    "empty": "Aún no hay oportunidades en esta etapa."
+  },
+  "tasks": {
+    "title": "Tareas",
+    "subtitle": "Prioriza seguimientos clave.",
+    "newTask": "Nueva tarea",
+    "taskTitle": "Tarea",
+    "status": "Estado",
+    "priority": "Prioridad",
+    "due": "Vence",
+    "owner": "Responsable",
+    "account": "Cuenta",
+    "filters": {
+      "allStatuses": "Todos los estados",
+      "allPriorities": "Todas las prioridades",
+      "allOwners": "Todos los responsables",
+      "anyDue": "Cualquier fecha",
+      "overdue": "Vencidas",
+      "dueToday": "Vence hoy",
+      "upcoming": "Próximas"
+    },
+    "statusValues": {
+      "OPEN": "Abierta",
+      "IN_PROGRESS": "En progreso",
+      "DONE": "Completada"
+    },
+    "priorityValues": {
+      "LOW": "Baja",
+      "MEDIUM": "Media",
+      "HIGH": "Alta"
+    },
+    "validation": {
+      "title": "El título debe tener al menos 2 caracteres."
+    },
+    "placeholders": {
+      "title": "Seguimiento"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Administra usuarios, roles y controles.",
+    "users": "Usuarios",
+    "roles": "Roles",
+    "emailLabel": "Correo",
+    "nameLabel": "Nombre",
+    "roleLabel": "Rol"
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "subtitle": "Gestiona tu información y seguridad.",
+    "details": "Detalles",
+    "security": "Seguridad",
+    "changePassword": "Cambiar contraseña",
+    "newPassword": "Nueva contraseña",
+    "updateSuccess": "Perfil actualizado.",
+    "updateError": "No se pudo actualizar el perfil.",
+    "emailLabel": "Correo",
+    "roleLabel": "Rol",
+    "tenantLabel": "Tenant",
+    "nameLabel": "Nombre completo",
+    "teamLabel": "Equipo",
+    "avatarTitle": "Foto de perfil",
+    "avatarDescription": "La carga de avatar aún no está habilitada."
+  },
+  "empty": {
+    "genericTitle": "Sin datos",
+    "genericBody": "Los datos aparecerán cuando estén disponibles."
+  },
+  "language": {
+    "label": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español"
+  },
+  "toast": {
+    "success": "Éxito",
+    "error": "Error"
+  },
+  "errors": {
+    "title": "Algo salió mal",
+    "body": "Intenta nuevamente o contacta soporte.",
+    "retry": "Reintentar"
+  }
+}

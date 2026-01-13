@@ -1,0 +1,213 @@
+{
+  "app": {
+    "name": "Main CRM",
+    "nav": {
+      "dashboard": "Dashboard",
+      "accounts": "Accounts",
+      "deals": "Deals",
+      "tasks": "Tasks",
+      "settings": "Settings",
+      "profile": "My Profile",
+      "logout": "Logout",
+      "search": "Search accounts, deals, contacts..."
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update",
+      "close": "Close",
+      "edit": "Edit",
+      "view": "View",
+      "new": "New",
+      "apply": "Apply",
+      "clear": "Clear",
+      "back": "Back",
+      "next": "Next"
+    },
+    "userFallback": "User"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full name",
+    "confirmPassword": "Confirm password",
+    "forgot": "Forgot password?",
+    "welcome": "Welcome back",
+    "subtitle": "Access your Main CRM workspace.",
+    "cta": "Need an account?",
+    "signupSubtitle": "Create a user in your tenant.",
+    "loginSuccess": "You're signed in.",
+    "loginError": "Unable to sign in. Check credentials.",
+    "signupSuccess": "User created successfully.",
+    "signupError": "Unable to create user.",
+    "logoutSuccess": "Signed out successfully.",
+    "adminNoticeTitle": "Admin required",
+    "adminNoticeBody": "Sign-up requires an authenticated admin to create a new user.",
+    "roleLabel": "Role",
+    "rolePlaceholder": "Select role",
+    "haveAccount": "Already have an account?",
+    "passwordMismatch": "Passwords do not match.",
+    "placeholders": {
+      "email": "you@company.com",
+      "password": "••••••••",
+      "name": "Alex Morgan",
+      "confirmPassword": "••••••••",
+      "signupEmail": "alex@company.com"
+    },
+    "validation": {
+      "email": "Enter a valid email.",
+      "password": "Password must be at least 12 characters.",
+      "name": "Name must be at least 2 characters.",
+      "role": "Select a role."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "kpis": {
+      "accounts": "Accounts",
+      "openDeals": "Open Deals",
+      "wonDeals": "Deals Won",
+      "tasksDue": "Tasks Due"
+    },
+    "activityTitle": "Recent activity",
+    "activityEmpty": "No recent activity yet."
+  },
+  "accounts": {
+    "title": "Accounts",
+    "subtitle": "Manage customer organizations and engagement.",
+    "emptyTitle": "No accounts yet",
+    "emptyBody": "Create your first account to start tracking relationships.",
+    "newAccount": "New Account",
+    "filters": {
+      "owner": "Owner",
+      "allOwners": "All owners",
+      "page": "Page {page} of {total}"
+    },
+    "placeholders": {
+      "name": "Acme Corp",
+      "industry": "Software",
+      "website": "https://company.com"
+    },
+    "validation": {
+      "name": "Account name must be at least 2 characters.",
+      "website": "Enter a valid website URL."
+    },
+    "fields": {
+      "name": "Account name",
+      "industry": "Industry",
+      "website": "Website"
+    },
+    "detail": {
+      "overview": "Overview",
+      "contacts": "Contacts",
+      "deals": "Deals",
+      "activities": "Activities",
+      "tasks": "Tasks",
+      "notes": "Notes",
+      "attachments": "Attachments"
+    }
+  },
+  "deals": {
+    "title": "Deals",
+    "subtitle": "Track pipeline movement and close revenue faster.",
+    "newDeal": "New Deal",
+    "dealName": "Deal name",
+    "pipeline": "Pipeline",
+    "stage": "Stage",
+    "value": "Value",
+    "account": "Account",
+    "placeholders": {
+      "name": "Enterprise Expansion",
+      "value": "50000"
+    },
+    "validation": {
+      "name": "Deal name must be at least 2 characters.",
+      "required": "This field is required."
+    },
+    "empty": "No deals in this stage yet."
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Stay on top of follow-ups and priorities.",
+    "newTask": "New Task",
+    "taskTitle": "Task",
+    "status": "Status",
+    "priority": "Priority",
+    "due": "Due",
+    "owner": "Owner",
+    "account": "Account",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allPriorities": "All priorities",
+      "allOwners": "All owners",
+      "anyDue": "Any due date",
+      "overdue": "Overdue",
+      "dueToday": "Due today",
+      "upcoming": "Upcoming"
+    },
+    "statusValues": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Done"
+    },
+    "priorityValues": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "validation": {
+      "title": "Task title must be at least 2 characters."
+    },
+    "placeholders": {
+      "title": "Follow up"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage users, roles, and workspace controls.",
+    "users": "Users",
+    "roles": "Roles",
+    "emailLabel": "Email",
+    "nameLabel": "Name",
+    "roleLabel": "Role"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal info and security.",
+    "details": "Profile details",
+    "security": "Security",
+    "changePassword": "Change password",
+    "newPassword": "New password",
+    "updateSuccess": "Profile updated.",
+    "updateError": "Unable to update profile.",
+    "emailLabel": "Email",
+    "roleLabel": "Role",
+    "tenantLabel": "Tenant",
+    "nameLabel": "Full name",
+    "teamLabel": "Team",
+    "avatarTitle": "Profile photo",
+    "avatarDescription": "Avatar uploads are not enabled yet."
+  },
+  "empty": {
+    "genericTitle": "Nothing here yet",
+    "genericBody": "Once data is available it will appear here."
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "spanish": "Spanish"
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "body": "Please retry or contact support.",
+    "retry": "Try again"
+  }
+}

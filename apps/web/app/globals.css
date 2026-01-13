@@ -7,5 +7,15 @@
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+@layer base {
+  html {
+    @apply font-sans;
+  }
+
+  *:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-slate-900;
+  }
 }

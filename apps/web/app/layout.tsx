@@ -1,27 +1,14 @@
 import './globals.css';
-import type { Metadata } from 'next';
-import { Providers } from './providers';
-import { Sidebar } from '../components/sidebar';
-import { Topbar } from '../components/topbar';
-
-export const metadata: Metadata = {
-  title: 'Main CRM',
-  description: 'Enterprise CRM platform'
-};
+import { cookies } from 'next/headers';
+import { defaultLocale, locales } from '../i18n';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieLocale = cookies().get('NEXT_LOCALE')?.value;
+  const locale = locales.includes(cookieLocale as (typeof locales)[number]) ? cookieLocale : defaultLocale;
   return (
-    <html lang="en">
-      <body>
-        <Providers>
-          <div className="min-h-screen flex">
-            <Sidebar />
-            <div className="flex-1">
-              <Topbar />
-              <main className="p-6">{children}</main>
-            </div>
-          </div>
-        </Providers>
+    <html lang={locale}>
+      <body className="bg-slate-50 text-slate-900">
+        {children}
       </body>
     </html>
   );

@@ -42,6 +42,35 @@ pnpm -r prisma:generate
 pnpm -r dev
 ```
 
+## Frontend (apps/web)
+
+### Setup
+
+```bash
+pnpm install
+pnpm --filter @maincrm/web dev
+```
+
+Environment variables:
+- `NEXT_PUBLIC_API_URL` (default `http://localhost:4000`)
+
+### Auth (dev)
+
+Seeded admin credentials (after `pnpm --filter @maincrm/api prisma:seed`):
+- **Email:** `admin@maincrm.local`
+- **Password:** `ChangeMe123!`
+
+### Language switcher
+
+Use the language selector in the top navigation to toggle English/Spanish. The locale is persisted in the `NEXT_LOCALE` cookie.
+
+### Tests
+
+```bash
+pnpm --filter @maincrm/web test
+pnpm --filter @maincrm/web test:e2e
+```
+
 ## Docker Compose
 
 ```bash
